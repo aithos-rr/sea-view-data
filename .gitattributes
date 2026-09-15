@@ -1,0 +1,14 @@
+# This repository holds text only. Every binary artefact — the port gazetteer
+# (SQLite) and the coastal tile archives (PMTiles) — is published as a GitHub
+# *release asset*, never committed here, so a clone stays a few hundred
+# kilobytes and the history never carries a rewritten gigabyte.
+#
+# The patterns below exist so that a mistaken `git add` of an artefact is at
+# least stored verbatim rather than mangled by line-ending or diff heuristics;
+# it should still be reverted and published as a release asset instead.
+*.sqlite  binary
+*.pmtiles binary
+*.pbf     binary
+*.md      text eol=lf
+*.txt     text eol=lf
+*.json    text eol=lf
