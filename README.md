@@ -45,22 +45,49 @@ release that actually holds the bytes, so a large file is uploaded once.
 
 | Artefact | File | Kind | Licence | Status |
 |---|---|---|---|---|
-| `ports` | `ports.sqlite` | fused port gazetteer | ODbL 1.0 (derivative database) | no release yet |
+| `ports` | `ports.sqlite` | fused port gazetteer | ODbL 1.0 (derivative database) | `data-v2026.11.10` (OpenStreetMap: Europe only) |
 | `coast-<region>` | `coast-<region>.pmtiles` | coastal vector tiles | ODbL 1.0 | no release yet |
 | `basemap-<region>` | `basemap-<region>.pmtiles` | fallback basemap tiles | ODbL 1.0 | no release yet |
 
-The table is filled in as the artefacts are published; every row is "no release
-yet" until then.
+The table is filled in as the artefacts are published.
 
 ---
 
 ## `ports` — the fused port gazetteer
 
-**Status: no release yet.**
+**Status: first release `data-v2026.11.10`** — `ports.sqlite`, 133,980,160
+bytes, sha256
+`b277d84ada0a363e3c8d5fe3e3cbbbfe9197735a3bfea5082b013222cd71297c`, built
+2026-11-10.
 
 A single SQLite database of ports, marinas, harbours and their berthing
 structures, fused from four sources with a deterministic rule set, used by Sea
 View to name the place a yacht is moored or anchored at.
+
+**Coverage of this release.** The OpenStreetMap part is **Europe only**:
+Geofabrik's `europe` region (`europe-latest.osm.pbf`, Last-Modified
+2026-11-04; it includes Turkey and Cyprus). The World Port Index, the EMODnet
+marinas and UN/LOCODE are **worldwide**, so outside Europe a port is a WPI or
+EMODnet point, without an OSM outline or berths. Later releases add the OSM
+extracts of the other continents.
+
+**Contents.** 27,973 ports (20,946 named; 13,426 with an OSM polygon, 14,547
+points) in 207 countries — marina 17,301, harbour 5,439, anchorage 2,276,
+dock 1,575, port 1,382; 396,931 berths (piers, quays, pontoons, breakwaters),
+142,269 of them attached to a port; 116,067 UN/LOCODEs for decoding AIS
+destinations, 5,244 linked to a port; 55,316 name aliases. Tables: `ports`
+(with an R*Tree), `aliases`, `berths` (with an R*Tree), `locodes`, `meta`
+(licence, notices, counts, sources), `provenance` (every input file with its
+sha256) and `exports` (`ports.geojson`: 20,945 named ports of rank ≤ 3 as
+points, 3.9 MB). The licence notices travel inside the file (`meta` keys
+`licence` and `notice.*`).
+
+**Verify.**
+
+```sh
+curl -sLO https://github.com/aithos-rr/sea-view-data/releases/download/data-v2026.11.10/ports.sqlite
+echo "b277d84ada0a363e3c8d5fe3e3cbbbfe9197735a3bfea5082b013222cd71297c  ports.sqlite" | sha256sum -c
+```
 
 **Origin and licence.** The result is an **ODbL Derivative Database**: it is
 produced from OpenStreetMap data and is published under the same licence.
@@ -91,7 +118,11 @@ Licence text: [`LICENSES/ODbL-1.0.txt`](LICENSES/ODbL-1.0.txt), also at
   > or quality of this reproduction or the use of any NGA, NIMA or DMA products,
   > information or data.
 
-  Source: <https://msi.nga.mil/commercial-use>.
+  Source: <https://msi.nga.mil/commercial-use>. In `data-v2026.11.10` the
+  input is the Internet Archive's byte-exact capture of NGA's official
+  Pub. 150 CSV as NGA served it on 2026-09-29 (sha256
+  `315644f1e77966291633145fd351c2762b37702d115926b9ed074b39e8e21667`):
+  NGA's download answered HTTP 503 on 2026-11-05 and again on 2026-11-10.
 - **EMODnet Human Activities** marinas (berth counts, curated names) —
   Data from EMODnet Human Activities (European Commission, DG MARE), CC BY 4.0.
   Licence text: [`LICENSES/CC-BY-4.0.txt`](LICENSES/CC-BY-4.0.txt).
