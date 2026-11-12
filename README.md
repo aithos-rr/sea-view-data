@@ -46,7 +46,7 @@ release that actually holds the bytes, so a large file is uploaded once.
 | Artefact | File | Kind | Licence | Status |
 |---|---|---|---|---|
 | `ports` | `ports.sqlite` | fused port gazetteer | ODbL 1.0 (derivative database) | `data-v2026.11.10` (OpenStreetMap: Europe only) |
-| `coast-<region>` | `coast-<region>.pmtiles` | coastal vector tiles | ODbL 1.0 | no release yet |
+| `coast-<region>` | `coast-<region>.pmtiles` | coastal vector tiles | ODbL 1.0 | `coast-europe`: `data-v2026.11.12`; other regions: no release yet |
 | `basemap-<region>` | `basemap-<region>.pmtiles` | fallback basemap tiles | ODbL 1.0 | no release yet |
 
 The table is filled in as the artefacts are published.
@@ -136,19 +136,59 @@ Licence text: [`LICENSES/ODbL-1.0.txt`](LICENSES/ODbL-1.0.txt), also at
 
 ## `coast-*` — coastal vector tiles
 
-**Status: no release yet.**
+**Status: first archive `coast-europe` in `data-v2026.11.12`**: `coast-europe.pmtiles`,
+287,534,736 bytes, sha256
+`a3088f3a75a0c2a21659ff62fcdf0594046300957d13d715ad4924b4c28dcce0`, built
+2026-11-10. The other regions have no release yet.
 
-PMTiles archives of the marine detail a general-purpose basemap does not carry:
-breakwaters, piers, quays, pontoons, moorings, harbour and marina polygons,
-seamarks. One archive per region.
+These are PMTiles archives of the marine detail that a general-purpose basemap
+does not carry: breakwaters, piers, quays, pontoons, moorings, harbour and
+marina polygons, and seamarks. There is one archive per Geofabrik region.
+They are **optional**: the manifest marks them `required: false`. The Sea View
+server starts without them and does not download them by default. The map
+reads them with HTTP Range requests straight from the release asset.
 
-**Origin and licence.** Built from OpenStreetMap data via Geofabrik extracts,
-and published under **ODbL 1.0** ([`LICENSES/ODbL-1.0.txt`](LICENSES/ODbL-1.0.txt)).
+| Region | File | OpenStreetMap data | Bytes | sha256 | Release |
+|---|---|---|---|---|---|
+| Europe | `coast-europe.pmtiles` | Geofabrik `europe`, 2026-11-04 (OSM up to 2026-11-03T21:24:23Z) | 287,534,736 | `a3088f3a75a0c2a21659ff62fcdf0594046300957d13d715ad4924b4c28dcce0` | `data-v2026.11.12` |
+
+**Coverage of `coast-europe`.** Geofabrik's `europe` region
+(`europe-latest.osm.pbf`, Last-Modified 2026-11-04, 35,372,035,423 bytes)
+runs from the Azores to 46.75° E. It therefore includes western Russia,
+Turkey, Cyprus and Georgia. It does not include the Canary Islands, which
+Geofabrik files under Africa.
+
+**Contents.** Vector tiles (MVT, gzip), zoom 10 to 15, with 1,506,691 tiles
+and 1,014,700 features in four layers. Each OpenStreetMap element is one
+feature, in the most specific layer it matches:
+
+- `structure`: 440,705 features (piers, groynes, breakwaters, floating structures, quays, lighthouses, pontoons)
+- `seamark`: 517,723 features (buoys, beacons, lights, moorings, notices and the rest of `seamark:type`)
+- `harbour`: 48,599 features (slipways, marinas, harbours, docks)
+- `mooring`: 7,673 features (`mooring=*`)
+
+The attributes are `kind`, `name`, `seamark_type`, `floating` and `osm_id`.
+The archives were built with
+[Planetiler](https://github.com/onthegomap/planetiler) 0.10.2. Nothing was
+reduced for size: the Europe archive is well under 1 GB.
+
+**Verify.**
+
+```sh
+curl -sLO https://github.com/aithos-rr/sea-view-data/releases/download/data-v2026.11.12/coast-europe.pmtiles
+echo "a3088f3a75a0c2a21659ff62fcdf0594046300957d13d715ad4924b4c28dcce0  coast-europe.pmtiles" | sha256sum -c
+```
+
+**Origin and licence.** The archives are built from OpenStreetMap data, using
+Geofabrik extracts. They are a Derivative Database of OpenStreetMap and are
+published under **ODbL 1.0**
+([`LICENSES/ODbL-1.0.txt`](LICENSES/ODbL-1.0.txt), also at
+<https://opendatacommons.org/licenses/odbl/1-0/>).
 
 > Contains information from OpenStreetMap, which is made available under the
 > Open Database License (ODbL).
 
-Attribution to display when these tiles are rendered: **© OpenStreetMap
+When these tiles are rendered, display this attribution: **© OpenStreetMap
 contributors** (<https://www.openstreetmap.org/copyright>).
 
 ---
